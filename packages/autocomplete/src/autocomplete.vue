@@ -58,7 +58,7 @@
   </div>
 </template>
 <script>
-  import debounce from 'throttle-debounce/debounce';
+  import { debounce } from 'lodash-es';
   import ElInput from 'element-ui/packages/input';
   import Clickoutside from 'element-ui/src/utils/clickoutside';
   import ElAutocompleteSuggestions from './autocomplete-suggestions.vue';
@@ -268,7 +268,7 @@
       }
     },
     mounted() {
-      this.debouncedGetData = debounce(this.debounce, this.getData);
+      this.debouncedGetData = debounce(this.getData, this.debounce);
       this.$on('item-click', item => {
         this.select(item);
       });

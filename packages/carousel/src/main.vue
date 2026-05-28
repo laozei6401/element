@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import throttle from 'throttle-debounce/throttle';
+import { throttle } from 'lodash-es';
 import { addResizeListener, removeResizeListener } from 'element-ui/src/utils/resize-event';
 
 export default {
@@ -288,12 +288,8 @@ export default {
   },
 
   created() {
-    this.throttledArrowClick = throttle(300, true, index => {
-      this.setActiveItem(index);
-    });
-    this.throttledIndicatorHover = throttle(300, index => {
-      this.handleIndicatorHover(index);
-    });
+    this.throttledArrowClick = throttle(index => this.setActiveItem(index), 300, { leading: true, trailing: false });
+    this.throttledIndicatorHover = throttle(index => this.handleIndicatorHover(index), 300);
   },
 
   mounted() {

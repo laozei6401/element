@@ -26,7 +26,7 @@
   import Locale from 'element-ui/src/mixins/locale';
   import { on, off, getScrollContainer, isInContainer } from 'element-ui/src/utils/dom';
   import { isString, isHtmlElement } from 'element-ui/src/utils/types';
-  import throttle from 'throttle-debounce/throttle';
+  import { throttle } from 'lodash-es';
 
   const isSupportObjectFit = () => document.documentElement.style.objectFit !== undefined;
 
@@ -185,7 +185,7 @@
 
         if (_scrollContainer) {
           this._scrollContainer = _scrollContainer;
-          this._lazyLoadHandler = throttle(200, this.handleLazyLoad);
+          this._lazyLoadHandler = throttle(this.handleLazyLoad, 200);
           on(_scrollContainer, 'scroll', this._lazyLoadHandler);
           this.handleLazyLoad();
         }

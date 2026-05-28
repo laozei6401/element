@@ -127,7 +127,7 @@ import { isEqual, isEmpty, kebabCase } from 'element-ui/src/utils/util';
 import { isUndefined, isFunction } from 'element-ui/src/utils/types';
 import { isDef } from 'element-ui/src/utils/shared';
 import { addResizeListener, removeResizeListener } from 'element-ui/src/utils/resize-event';
-import debounce from 'throttle-debounce/debounce';
+import { debounce } from 'lodash-es';
 
 const { keys: KeyCode } = AriaUtils;
 const MigratingProps = {
@@ -355,23 +355,26 @@ export default {
       this.computePresentContent();
     }
 
-    this.filterHandler = debounce(this.debounce, () => {
-      const { inputValue } = this;
+    this.filterHandler = debounce(
+      () => {
+        const { inputValue } = this;
 
-      if (!inputValue) {
-        this.filtering = false;
-        return;
-      }
+        if (!inputValue) {
+          this.filtering = false;
+          return;
+        }
 
-      const before = this.beforeFilter(inputValue);
-      if (before && before.then) {
-        before.then(this.getSuggestions);
-      } else if (before !== false) {
-        this.getSuggestions();
-      } else {
-        this.filtering = false;
-      }
-    });
+        const before = this.beforeFilter(inputValue);
+        if (before && before.then) {
+          before.then(this.getSuggestions);
+        } else if (before !== false) {
+          this.getSuggestions();
+        } else {
+          this.filtering = false;
+        }
+      },
+      this.debounce
+    );
 
     addResizeListener(this.$el, this.updateStyle);
   },

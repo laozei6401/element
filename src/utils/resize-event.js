@@ -1,5 +1,5 @@
 import ResizeObserver from 'resize-observer-polyfill';
-import { debounce } from 'throttle-debounce';
+import { debounce } from 'lodash-es';
 
 const isServer = typeof window === 'undefined';
 
@@ -20,7 +20,7 @@ export const addResizeListener = function(element, fn) {
   if (isServer) return;
   if (!element.__resizeListeners__) {
     element.__resizeListeners__ = [];
-    element.__ro__ = new ResizeObserver(debounce(16, resizeHandler));
+    element.__ro__ = new ResizeObserver(debounce(resizeHandler, 16));
     element.__ro__.observe(element);
   }
   element.__resizeListeners__.push(fn);

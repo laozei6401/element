@@ -353,13 +353,11 @@
   </div>
 </template>
 <script>
-  import throttle from 'throttle-debounce/throttle';
+  import { throttle } from 'lodash-es';
   
   export default {
     created() {
-      this.throttledHandleScroll = throttle(10, true, index => {
-        this.handleScroll(index);
-      });
+      this.throttledHandleScroll = throttle(index => this.handleScroll(index), 10, { leading: true, trailing: false });
     },
     methods: {
       handleScroll(index) {

@@ -151,7 +151,7 @@
 <script>
   import bus from '../../bus';
   import navsData from '../../nav.config.json';
-  import throttle from 'throttle-debounce/throttle';
+  import { throttle } from 'lodash-es';
 
   export default {
     data() {
@@ -225,7 +225,7 @@
     mounted() {
       this.componentScrollBar = this.$refs.componentScrollBar;
       this.componentScrollBox = this.componentScrollBar.$el.querySelector('.el-scrollbar__wrap');
-      this.throttledScrollHandler = throttle(300, this.handleScroll);
+      this.throttledScrollHandler = throttle(this.handleScroll, 300);
       this.componentScrollBox.addEventListener('scroll', this.throttledScrollHandler);
       this.renderAnchorHref();
       this.goAnchor();
