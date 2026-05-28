@@ -1,6 +1,6 @@
 import defaultLang from 'element-ui/src/locale/lang/zh-CN';
 import Vue from 'vue';
-import deepmerge from 'deepmerge';
+import { merge } from 'lodash-es';
 import Format from './format';
 
 const format = Format(Vue);
@@ -13,7 +13,7 @@ let i18nHandler = function() {
       merged = true;
       Vue.locale(
         Vue.config.lang,
-        deepmerge(lang, Vue.locale(Vue.config.lang) || {}, { clone: true })
+        merge({}, lang, Vue.locale(Vue.config.lang) || {})
       );
     }
     return vuei18n.apply(this, arguments);

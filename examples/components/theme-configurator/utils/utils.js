@@ -1,4 +1,4 @@
-import deepmerge from 'deepmerge';
+import { merge } from 'lodash-es';
 import constant from '../../../i18n/theme-editor.json';
 
 export const filterConfigType = (name) => {
@@ -19,7 +19,7 @@ export const filterGlobalValue = (defaultConfig, userConfig) => {
     const configObj = {};
     defaultConfig
       .find(config => (config.name === global))
-      .config.forEach(c => (configObj[c.key] = deepmerge({}, c)));
+      .config.forEach(c => (configObj[c.key] = merge({}, c)));
     valueObject[global] = configObj;
     Object.keys(configObj).forEach((c) => {
       if (userConfig.global[c]) {
