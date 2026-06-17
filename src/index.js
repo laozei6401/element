@@ -91,6 +91,7 @@ import DescriptionsItem from '../packages/descriptions-item/index.js';
 import Result from '../packages/result/index.js';
 import locale from 'element-ui/src/locale';
 import CollapseTransition from 'element-ui/src/transitions/collapse-transition';
+import PopperOffset from 'element-ui/src/popper-offset';
 
 const components = [
   Pagination,
@@ -204,6 +205,7 @@ const install = function(Vue, opts = {}) {
   Vue.prototype.$notify = Notification;
   Vue.prototype.$message = Message;
 
+  PopperOffset.use(opts.offsetEl);
 };
 
 /* istanbul ignore if */
@@ -218,6 +220,7 @@ export default {
   install,
   CollapseTransition,
   Loading,
+  PopperOffset,
   Pagination,
   Dialog,
   Autocomplete,

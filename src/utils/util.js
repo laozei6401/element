@@ -243,3 +243,19 @@ export function objToArray(obj) {
 export const isMac = function() {
   return !Vue.prototype.$isServer && /macintosh|mac os x/i.test(navigator.userAgent);
 };
+
+export function getExternalScalingRatio(el) {
+  if (!el) return 1;
+
+  const { transform } = window.getComputedStyle(el);
+
+  if (!transform || transform === 'none') return 1;
+
+  const match = transform.match(/matrix\(([^)]+)\)/);
+  if (match) {
+    return Number(match[1].split(',')[0]) || 1;
+  }
+
+  const scaleMatch = transform.match(/scale\(([^)]+)\)/);
+  return scaleMatch ? Number(scaleMatch[1]) : 1;
+}

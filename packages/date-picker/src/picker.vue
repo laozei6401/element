@@ -86,6 +86,7 @@
 <script>
 import Vue from 'vue';
 import Clickoutside from 'element-ui/src/utils/clickoutside';
+import { getExternalScalingRatio } from 'element-ui/src/utils/util';
 import { formatDate, parseDate, isDateObject, getWeekNumber } from 'element-ui/src/utils/date-util';
 import Popper from 'element-ui/src/utils/vue-popper';
 import Emitter from 'element-ui/src/mixins/emitter';
@@ -424,7 +425,8 @@ export default {
       showClose: false,
       userInput: null,
       valueOnOpen: null, // value when picker opens, used to determine whether to emit change
-      unwatchPickerOptions: null
+      unwatchPickerOptions: null,
+      scale: 1
     };
   },
 
@@ -608,6 +610,10 @@ export default {
     this.placement = PLACEMENT_MAP[this.align] || PLACEMENT_MAP.left;
 
     this.$on('fieldReset', this.handleFieldReset);
+  },
+
+  mounted() {
+    this.scale = getExternalScalingRatio(window.offsetEl);
   },
 
   methods: {

@@ -78,9 +78,27 @@
 
         modifiersIgnored: [],
 
-        forceAbsolute: false
+        forceAbsolute: false,
+        
+        scale: 1
     };
-
+    
+    function getExternalScalingRatio(el) {
+        if (!el) return 1;
+        
+        const { transform } = window.getComputedStyle(el);
+        
+        if (!transform || transform === 'none') return 1;
+        
+        const match = transform.match(/matrix\(([^)]+)\)/);
+        if (match) {
+            return Number(match[1].split(',')[0]) || 1;
+        }
+        
+        const scaleMatch = transform.match(/scale\(([^)]+)\)/);
+        return scaleMatch ? Number(scaleMatch[1]) : 1;
+    }
+    
     /**
      * Create a new Popper.js instance
      * @constructor Popper
@@ -415,7 +433,11 @@
         //
         // Compute offsets of popper
         //
-
+        
+        Object.keys(referenceOffsets).forEach((key) => {
+            referenceOffsets[key] = referenceOffsets[key] / DEFAULTS.scale
+        });
+        
         // depending by the popper placement we have to compute its offsets slightly differently
         if (['right', 'left'].indexOf(placement) !== -1) {
             popperOffsets.top = referenceOffsets.top + referenceOffsets.height / 2 - popperRect.height / 2;
@@ -451,6 +473,8 @@
      * @access private
      */
     Popper.prototype._setupEventListeners = function() {
+        DEFAULTS.scale = getExternalScalingRatio(root.offsetEl)
+        
         // NOTE: 1 DOM access here
         this.state.updateBound = this.update.bind(this);
         root.addEventListener('resize', this.state.updateBound);
@@ -548,6 +572,11 @@
         boundaries.right -= padding;
         boundaries.top = boundaries.top + padding;
         boundaries.bottom = boundaries.bottom - padding;
+        
+        Object.keys(boundaries).forEach((key) => {
+            boundaries[key] = boundaries[key] / DEFAULTS.scale
+        })
+        
         return boundaries;
     };
 
