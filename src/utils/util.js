@@ -259,3 +259,7 @@ export function getExternalScalingRatio(el) {
   const scaleMatch = transform.match(/scale\(([^)]+)\)/);
   return scaleMatch ? Number(scaleMatch[1]) : 1;
 }
+
+export function isUnidimensionalArray(arr) {
+  return Array.isArray(arr) && !arr.every(item => Array.isArray(item));
+}

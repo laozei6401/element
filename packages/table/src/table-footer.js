@@ -1,3 +1,4 @@
+import { isUnidimensionalArray } from 'element-ui/src/utils/util';
 import LayoutObserver from './layout-observer';
 import { mapStates } from './store/helper';
 
@@ -7,13 +8,14 @@ export default {
   mixins: [LayoutObserver],
 
   render(h) {
-    let sums = [];
+    let rows = [];
+
     if (this.summaryMethod) {
-      sums = this.summaryMethod({ columns: this.columns, data: this.store.states.data });
+      rows = this.summaryMethod({ columns: this.columns, data: this.store.states.data });
     } else {
       this.columns.forEach((column, index) => {
         if (index === 0) {
-          sums[index] = this.sumText;
+          rows[index] = this.sumText;
           return;
         }
         const values = this.store.states.data.map(item => Number(item[column.property]));
@@ -28,7 +30,7 @@ export default {
         });
         const precision = Math.max.apply(null, precisions);
         if (!notNumber) {
-          sums[index] = values.reduce((prev, curr) => {
+          rows[index] = values.reduce((prev, curr) => {
             const value = Number(curr);
             if (!isNaN(value)) {
               return parseFloat((prev + curr).toFixed(Math.min(precision, 20)));
@@ -37,9 +39,13 @@ export default {
             }
           }, 0);
         } else {
-          sums[index] = '';
+          rows[index] = '';
         }
       });
+    }
+
+    if (isUnidimensionalArray(rows)) {
+      rows = [rows];
     }
 
     return (
@@ -57,24 +63,32 @@ export default {
           }
         </colgroup>
         <tbody class={ [{ 'has-gutter': this.hasGutter }] }>
-          <tr>
-            {
-              this.columns.map((column, cellIndex) => <td
-                key={cellIndex}
-                colspan={ column.colSpan }
-                rowspan={ column.rowSpan }
-                class={ [...this.getRowClasses(column, cellIndex), 'el-table__cell'] }>
-                <div class={ ['cell', column.labelClassName] }>
-                  {
-                    sums[cellIndex]
-                  }
-                </div>
-              </td>)
-            }
-            {
-              this.hasGutter ? <th class="el-table__cell gutter"></th> : ''
-            }
-          </tr>
+          {
+            rows.map((row, $index) => (
+              <tr>
+                {
+                  this.columns.map((column, cellIndex) => {
+                    const { rowspan, colspan } = this.getSpan(row, column, $index, cellIndex);
+
+                    return (
+                      <td
+                        key={ cellIndex }
+                        rowspan={rowspan}
+                        colspan={colspan}
+                        class={ [...this.getRowClasses(column, cellIndex), 'el-table__cell'] }>
+                        <div class={ ['cell', column.labelClassName] }>
+                          { row[cellIndex] }
+                        </div>
+                      </td>
+                    );
+                  })
+                }
+                {
+                  this.hasGutter ? <th class="el-table__cell gutter"></th> : ''
+                }
+              </tr>
+            ))
+          }
         </tbody>
       </table>
     );
@@ -148,6 +162,23 @@ export default {
         classes.push('is-leaf');
       }
       return classes;
+    },
+
+    getSpan(row, column, rowIndex, columnIndex) {
+      let rowspan = 1;
+      let colspan = 1;
+      const fn = this.table.spanMethod;
+      if (typeof fn === 'function') {
+        const result = fn({ row, column, rowIndex, columnIndex });
+        if (Array.isArray(result)) {
+          rowspan = result[0];
+          colspan = result[1];
+        } else if (typeof result === 'object') {
+          rowspan = result.rowspan;
+          colspan = result.colspan;
+        }
+      }
+      return { rowspan, colspan };
     }
   }
 };
